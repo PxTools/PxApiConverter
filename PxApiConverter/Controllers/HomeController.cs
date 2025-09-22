@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using PxApiConverter.Models;
 
 namespace PxApiConverter.Controllers
@@ -7,14 +8,18 @@ namespace PxApiConverter.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly PxApiOptions _options;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, IOptions<PxApiOptions> options)
         {
             _logger = logger;
+            _options = options.Value;
         }
 
         public IActionResult Index()
         {
+            ViewData["TestPrefix"] = _options.TestUrlPrefix ?? string.Empty;
+            ViewData["ProdPrefix"] = string.Empty;
             return View();
         }
 
