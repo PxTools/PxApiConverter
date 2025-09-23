@@ -1,7 +1,12 @@
+using PxApiConverter.Models;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+// Bind PxApi options
+builder.Services.Configure<PxApiOptions>(builder.Configuration.GetSection("PxApi"));
 
 var app = builder.Build();
 

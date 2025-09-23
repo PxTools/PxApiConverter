@@ -1,8 +1,121 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Start";
+    var testPrefix = (string?)ViewData["TestPrefix"] ?? string.Empty;
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core!</a>.</p>
+<h1 class="mb-4">PxApi Converter</h1>
+<div class="alert alert-info mb-4" role="alert">
+    Note: The JsonStat format is not supported in API2.
 </div>
+
+<div class="row">
+    <div class="col-lg-8 col-xl-7">
+        <form id="convertForm" onsubmit="return false;" class="mb-4">
+            <div class="mb-3">
+                <label for="urlInput" class="form-label">URL</label>
+                <input type="text" class="form-control" id="urlInput" placeholder="@testPrefix..." required />
+                <div class="invalid-feedback" id="urlError">URL must start with @testPrefix</div>
+            </div>
+            <div class="mb-3">
+                <label for="jsonInput" class="form-label">POST query (JSON)</label>
+                <textarea class="form-control font-monospace" id="jsonInput" rows="8" placeholder='{"query": { ... }}'></textarea>
+            </div>
+            <button id="convertBtn" class="btn btn-primary">Convert</button>
+        </form>
+
+        <div id="results" class="d-none">
+            <h2 class="h5 mb-3">Result</h2>
+            <div class="mb-3">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                    <label class="form-label fw-semibold mb-0">GET format</label>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="copyToClipboard('getResult')">Copy</button>
+                </div>
+                <pre class="bg-light p-2 border rounded" style="white-space:pre-wrap;" id="getResult"></pre>
+            </div>
+            <div class="mb-3">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                    <label class="form-label fw-semibold mb-0">POST format</label>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="copyToClipboard('postResult')">Copy</button>
+                </div>
+                <pre class="bg-light p-2 border rounded" style="white-space:pre-wrap;" id="postResult"></pre>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    const urlInput = document.getElementById('urlInput');
+    const jsonInput = document.getElementById('jsonInput');
+    const resultsDiv = document.getElementById('results');
+    const getResultEl = document.getElementById('getResult');
+    const postResultEl = document.getElementById('postResult');
+    const convertBtn = document.getElementById('convertBtn');
+    const urlError = document.getElementById('urlError');
+
+    const TEST_PREFIX = '@testPrefix';
+
+    function isValidPrefix(value) {
+        return value.startsWith(TEST_PREFIX);
+    }
+
+    function validateUrlInput() {
+        const val = urlInput.value.trim();
+        if (!val) {
+            urlInput.classList.remove('is-invalid');
+            return true; // HTML5 required handles empty
+        }
+        if (isValidPrefix(val)) {
+            urlInput.classList.remove('is-invalid');
+            return true;
+        } else {
+            urlInput.classList.add('is-invalid');
+            return false;
+        }
+    }
+
+    urlInput.addEventListener('input', validateUrlInput);
+    urlInput.addEventListener('blur', validateUrlInput);
+
+    convertBtn.addEventListener('click', () => {
+        const url = urlInput.value.trim();
+        const ok = validateUrlInput();
+        if (!url || !ok) {
+            urlInput.focus();
+            return;
+        }
+
+        const jsonText = jsonInput.value.trim();
+
+        // Placeholder logic: GET shows URL + ?query=<urlenc(json)> if JSON exists
+        let getOut = url;
+        if (jsonText) {
+            getOut += (url.includes('?') ? '&' : '?') + 'query=' + encodeURIComponent(jsonText);
+        }
+
+        // POST shows a simple curl example until real logic is implemented
+        let postOut = '';
+        if (jsonText) {
+            postOut = `curl -X POST "${url}" \n  -H "Content-Type: application/json" \n  -d '${jsonText.replace(/'/g, "'\\''")}'`;
+        } else {
+            postOut = 'No JSON provided.';
+        }
+
+        getResultEl.textContent = getOut;
+        postResultEl.textContent = postOut;
+        resultsDiv.classList.remove('d-none');
+    });
+
+    window.copyToClipboard = function (elementId) {
+        const el = document.getElementById(elementId);
+        if (!el) return;
+        const text = el.textContent;
+        navigator.clipboard.writeText(text).then(() => {
+            const btn = event.target;
+            const original = btn.textContent;
+            btn.textContent = 'Copied!';
+            setTimeout(()=> btn.textContent = original, 1500);
+        }).catch(()=> alert('Could not copy'));
+    }
+</script>
+}
