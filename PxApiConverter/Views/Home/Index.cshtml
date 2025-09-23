@@ -17,25 +17,25 @@
                 <div class="invalid-feedback" id="urlError">URL must start with @testPrefix</div>
             </div>
             <div class="mb-3">
-                <label for="jsonInput" class="form-label">POST-fråga (JSON)</label>
+                <label for="jsonInput" class="form-label">POST query (JSON)</label>
                 <textarea class="form-control font-monospace" id="jsonInput" rows="8" placeholder='{"query": { ... }}'></textarea>
             </div>
-            <button id="convertBtn" class="btn btn-primary">Konvertera</button>
+            <button id="convertBtn" class="btn btn-primary">Convert</button>
         </form>
 
         <div id="results" class="d-none">
-            <h2 class="h5 mb-3">Resultat</h2>
+            <h2 class="h5 mb-3">Result</h2>
             <div class="mb-3">
                 <div class="d-flex justify-content-between align-items-center mb-1">
-                    <label class="form-label fw-semibold mb-0">GET-format</label>
-                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="copyToClipboard('getResult')">Kopiera</button>
+                    <label class="form-label fw-semibold mb-0">GET format</label>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="copyToClipboard('getResult')">Copy</button>
                 </div>
                 <pre class="bg-light p-2 border rounded" style="white-space:pre-wrap;" id="getResult"></pre>
             </div>
             <div class="mb-3">
                 <div class="d-flex justify-content-between align-items-center mb-1">
-                    <label class="form-label fw-semibold mb-0">POST-format</label>
-                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="copyToClipboard('postResult')">Kopiera</button>
+                    <label class="form-label fw-semibold mb-0">POST format</label>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="copyToClipboard('postResult')">Copy</button>
                 </div>
                 <pre class="bg-light p-2 border rounded" style="white-space:pre-wrap;" id="postResult"></pre>
             </div>
@@ -63,7 +63,7 @@
         const val = urlInput.value.trim();
         if (!val) {
             urlInput.classList.remove('is-invalid');
-            return true; // HTML5 required hanterar tomt
+            return true; // HTML5 required handles empty
         }
         if (isValidPrefix(val)) {
             urlInput.classList.remove('is-invalid');
@@ -87,18 +87,18 @@
 
         const jsonText = jsonInput.value.trim();
 
-        // Placeholder-logik: GET visar URL + ?query=<urlenc(json)> om JSON finns
+        // Placeholder logic: GET shows URL + ?query=<urlenc(json)> if JSON exists
         let getOut = url;
         if (jsonText) {
             getOut += (url.includes('?') ? '&' : '?') + 'query=' + encodeURIComponent(jsonText);
         }
 
-        // POST visar curl-exempel (förenklat) så länge riktig logik ej är implementerad
+        // POST shows a simple curl example until real logic is implemented
         let postOut = '';
         if (jsonText) {
             postOut = `curl -X POST "${url}" \n  -H "Content-Type: application/json" \n  -d '${jsonText.replace(/'/g, "'\\''")}'`;
         } else {
-            postOut = 'Ingen JSON angiven.';
+            postOut = 'No JSON provided.';
         }
 
         getResultEl.textContent = getOut;
@@ -113,9 +113,9 @@
         navigator.clipboard.writeText(text).then(() => {
             const btn = event.target;
             const original = btn.textContent;
-            btn.textContent = 'Kopierat!';
+            btn.textContent = 'Copied!';
             setTimeout(()=> btn.textContent = original, 1500);
-        }).catch(()=> alert('Kunde inte kopiera'));
+        }).catch(()=> alert('Could not copy'));
     }
 </script>
 }
