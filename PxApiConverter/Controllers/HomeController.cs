@@ -2,6 +2,7 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using PxApiConverter.Models;
+using NotImplementedException = System.NotImplementedException;
 
 namespace PxApiConverter.Controllers
 {
@@ -32,6 +33,12 @@ namespace PxApiConverter.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        [HttpPost]
+        public IActionResult ConvertResult(string url, string body)
+        {
+            throw new NotImplementedException();
         }
     }
 }
