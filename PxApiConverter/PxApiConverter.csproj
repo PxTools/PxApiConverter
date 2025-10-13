@@ -4,10 +4,11 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <EnableDefaultContentItems>false</EnableDefaultContentItems>
   </PropertyGroup>
 
-  <!-- Säkerställ att käll-vyer följer med -->
   <ItemGroup>
     <Content Include="Views\\**\\*.cshtml" CopyToPublishDirectory="Always" />
   </ItemGroup>
+
 </Project>
