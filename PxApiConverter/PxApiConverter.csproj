@@ -6,10 +6,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <!-- Säkerställ att käll-vyer följer med -->
   <ItemGroup>
-    <Content Update="Views\Shared\_Layout.cshtml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <Content Include="Views\\**\\*.cshtml" CopyToPublishDirectory="Always" />
   </ItemGroup>
-
 </Project>
