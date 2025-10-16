@@ -1,9 +1,8 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using PxApiConverter.Models;
-using System.Net;
 using PxApiConverter.Business;
+using PxApiConverter.Models;
+using System.Diagnostics;
 
 namespace PxApiConverter.Controllers
 {
@@ -22,7 +21,7 @@ namespace PxApiConverter.Controllers
 
         public IActionResult Index()
         {
-            ViewData["UrlPrefix"] = _options.UrlPrefix ?? string.Empty;
+            ViewData["UrlPrefix"] = _options.SourceUrlPrefix ?? string.Empty;
             return View();
         }
 
@@ -41,7 +40,7 @@ namespace PxApiConverter.Controllers
         [IgnoreAntiforgeryToken] // Remove if you later add the token from the form / fetch call
         public async Task<IActionResult> ConvertResult([FromForm] string url, [FromForm] string body)
         {
-            var prefix = _options.UrlPrefix ?? string.Empty;
+            var prefix = _options.SourceUrlPrefix ?? string.Empty;
             if (string.IsNullOrWhiteSpace(url))
             {
                 return BadRequest(new { error = "Url is required" });

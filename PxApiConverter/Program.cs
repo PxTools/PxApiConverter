@@ -1,6 +1,7 @@
-using PxApiConverter.Models;
 using PxApiConverter.Business;
 using PxApiConverter.Logging;
+using PxApiConverter.Models;
+using PxApiConverter.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,11 +11,42 @@ builder.Logging.AddSimpleFile();
 // Bind PxApi options
 builder.Services.Configure<PxApiOptions>(builder.Configuration.GetSection("PxApi"));
 
+
 // Register converters
 builder.Services.AddScoped<IApiConverter, ApiConverter>();
 
+
+var dbType = builder.Configuration.GetSection("PxApi:DatasourceType").Value ?? "PX";
+var db = builder.Configuration.GetSection("PxApi:Database").Value ?? @"C:\inetpub\wwwroot\pxweb\Resources\PX\Databases";
+
+if (string.Compare(dbType, "PX", true) == 0)
+{
+    builder.Services.AddSingleton<IDatasource>(
+      provider =>
+      {
+          return new PxFileDatasource(@"C:\Development\code\github\statisticssweden\PxWeb\PXWeb\Resources\PX\Databases\Demo");
+      });
+}
+else if (string.Compare(dbType, "CNMM", true) == 0)
+{
+    builder.Services.AddSingleton<IDatasource>(
+      provider =>
+      {
+          return new CnmmDatasource(db);
+      });
+}
+else
+{
+    throw new Exception($"Unknown datasource type {dbType}");
+}
+
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+
+
+
 
 // Bind file logger options from configuration section "FileLogging" if present
 builder.Services.Configure<FileLoggerOptions>(builder.Configuration.GetSection("FileLogging"));
