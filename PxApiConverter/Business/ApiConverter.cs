@@ -73,8 +73,6 @@ namespace PxApiConverter.Business
                 _logger.LogInformation("Failed to convert selection for path {Path}", path);
                 throw new ArgumentException("Failed to convert selection", nameof(body));
             }
-
-
             var dataUrl = @$"{_targetBaseUrl}/tables/{tableId}/data?lang={lang}&outputFormat={EnumConverter.ToEnumString(outputFormat)}";
 
             if (outputFormatParams.Count > 0)
