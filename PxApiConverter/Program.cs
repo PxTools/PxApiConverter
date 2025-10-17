@@ -1,12 +1,23 @@
 using PxApiConverter.Models;
+using PxApiConverter.Business;
+using PxApiConverter.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Configure logging (add file logger before building services)
+builder.Logging.AddSimpleFile();
+
+// Bind PxApi options
+builder.Services.Configure<PxApiOptions>(builder.Configuration.GetSection("PxApi"));
+
+// Register converters
+builder.Services.AddScoped<IApiConverter, ApiConverter>();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-// Bind PxApi options
-builder.Services.Configure<PxApiOptions>(builder.Configuration.GetSection("PxApi"));
+// Bind file logger options from configuration section "FileLogging" if present
+builder.Services.Configure<FileLoggerOptions>(builder.Configuration.GetSection("FileLogging"));
 
 var app = builder.Build();
 
