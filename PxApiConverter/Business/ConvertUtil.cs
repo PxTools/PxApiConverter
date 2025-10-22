@@ -166,7 +166,7 @@ namespace sq_migrate
             var sb = new StringBuilder();
             foreach (var selection in selections.Selection)
             {
-                sb.Append($"&variableCodes[{selection.VariableCode}]={string.Join(',', selection.ValueCodes.Select(c => c.Contains(',') ? $"[{c}]" : c))}");
+                sb.Append($"&valueCodes[{selection.VariableCode}]={string.Join(',', selection.ValueCodes.Select(c => c.Contains(',') ? $"[{c}]" : c))}");
                 if (!string.IsNullOrWhiteSpace(selection.CodeList))
                 {
                     sb.Append($"&codeList[{selection.VariableCode}]={selection.CodeList}");

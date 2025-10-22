@@ -24,7 +24,7 @@ if (string.Compare(dbType, "PX", true) == 0)
     builder.Services.AddSingleton<IDatasource>(
       provider =>
       {
-          return new PxFileDatasource(@"C:\Development\code\github\statisticssweden\PxWeb\PXWeb\Resources\PX\Databases\Demo");
+          return new PxFileDatasource(db);
       });
 }
 else if (string.Compare(dbType, "CNMM", true) == 0)
