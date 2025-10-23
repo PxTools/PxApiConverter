@@ -2,5 +2,6 @@ namespace PxApiConverter.Models;
 
 public class PxApiOptions
 {
-    public string? UrlPrefix { get; set; }
+    public string? SourceUrlPrefix { get; set; }
+    public string? TargetUrlPrefix { get; set; }
 }
