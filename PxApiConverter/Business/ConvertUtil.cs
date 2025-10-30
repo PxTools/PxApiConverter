@@ -1,6 +1,7 @@
 ﻿using PCAxis.Paxiom;
 using PxWeb.Api2.Server.Models;
 using System.Text;
+using System.Web;
 
 namespace sq_migrate
 {
@@ -166,7 +167,13 @@ namespace sq_migrate
             var sb = new StringBuilder();
             foreach (var selection in selections.Selection)
             {
-                sb.Append($"&valueCodes[{selection.VariableCode}]={string.Join(',', selection.ValueCodes.Select(c => c.Contains(',') ? $"[{c}]" : c))}");
+                var encodedValues = selection.ValueCodes.Select(vc =>
+                {
+                    var enc = Uri.EscapeDataString(vc);
+                    return vc.Contains(',') ? $"[{enc}]" : enc;
+                });
+
+                sb.Append($"&valueCodes[{selection.VariableCode}]={string.Join(',', encodedValues)}");
                 if (!string.IsNullOrWhiteSpace(selection.CodeList))
                 {
                     sb.Append($"&codeList[{selection.VariableCode}]={selection.CodeList}");
