@@ -21,6 +21,7 @@
                 <textarea class="form-control font-monospace" id="jsonInput" name="body" rows="8" placeholder='{"query": { ... }}'></textarea>
             </div>
             <button id="convertBtn" type="submit" class="btn btn-primary">Convert</button>
+            <div id="convertError" class="text-danger mt-2" style="display:none;"></div>
         </form>
 
         <div id="results" class="d-none">
@@ -28,21 +29,21 @@
             <div class="mb-3">
                 <div class="d-flex justify-content-between align-items-center mb-1">
                     <label class="form-label fw-semibold mb-0">GET URL</label>
-                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="copyToClipboard('getResult', this)">Copy</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="copyToClipboard('getResult', this)" aria-label="Copy GET URL">Copy GET URL</button>
                 </div>
                 <pre class="bg-light p-2 border rounded" style="white-space:pre-wrap;" id="getResult"></pre>
             </div>
             <div class="mb-3">
                 <div class="d-flex justify-content-between align-items-center mb-1">
                     <label class="form-label fw-semibold mb-0">POST URL</label>
-                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="copyToClipboard('postUrlResult', this)">Copy</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="copyToClipboard('postUrlResult', this)" aria-label="Copy POST URL">Copy POST URL</button>
                 </div>
                 <pre class="bg-light p-2 border rounded" style="white-space:pre-wrap;" id="postUrlResult"></pre>
             </div>
             <div class="mb-3">
                 <div class="d-flex justify-content-between align-items-center mb-1">
                     <label class="form-label fw-semibold mb-0">POST Body</label>
-                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="copyToClipboard('postBodyResult', this)">Copy</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="copyToClipboard('postBodyResult', this)" aria-label="Copy POST Body">Copy POST Body</button>
                 </div>
                 <pre class="bg-light p-2 border rounded" style="white-space:pre-wrap;" id="postBodyResult"></pre>
             </div>
@@ -60,6 +61,7 @@
     const postBodyResultEl = document.getElementById('postBodyResult');
     const convertForm = document.getElementById('convertForm');
     const urlError = document.getElementById('urlError');
+    const convertErrorEl = document.getElementById('convertError');
 
     const URL_PREFIX = '@urlPrefix';
 
@@ -83,11 +85,20 @@
         }
     }
 
+    function clearResults() {
+        getResultEl.textContent = '';
+        postUrlResultEl.textContent = '';
+        postBodyResultEl.textContent = '';
+        resultsDiv.classList.add('d-none');
+    }
+
     urlInput.addEventListener('input', validateUrlInput);
     urlInput.addEventListener('blur', validateUrlInput);
 
     convertForm.addEventListener('submit', async (e) => {
         e.preventDefault();
+        convertErrorEl.style.display = 'none';
+        convertErrorEl.textContent = '';
         const url = urlInput.value.trim();
         const ok = validateUrlInput();
         if (!url || !ok) {
@@ -104,7 +115,9 @@
             });
             if(!response.ok){
                 const err = await response.json().catch(()=>({ error: 'Unknown error'}));
-                alert(err.error || 'Error');
+                convertErrorEl.textContent = err.error || 'Unknown error';
+                convertErrorEl.style.display = 'block';
+                clearResults();
                 return;
             }
             const data = await response.json();
@@ -113,7 +126,9 @@
             postBodyResultEl.textContent = data.postBody || 'No JSON provided.';
             resultsDiv.classList.remove('d-none');
         } catch (err) {
-            alert('Network error');
+            convertErrorEl.textContent = 'Network error';
+            convertErrorEl.style.display = 'block';
+            clearResults();
         }
     });
 
@@ -126,7 +141,6 @@
             if (navigator.clipboard && navigator.clipboard.writeText) {
                 await navigator.clipboard.writeText(text);
             } else {
-                // Fallback
                 const ta = document.createElement('textarea');
                 ta.value = text;
                 ta.style.position = 'fixed';
@@ -144,7 +158,10 @@
             btn.textContent = 'Copied!';
             btn.disabled = true;
             setTimeout(()=> { btn.textContent = original; btn.disabled = false; }, 1500);
-        }).catch(()=> alert('Could not copy'));
+        }).catch(()=> {
+            convertErrorEl.textContent = 'Could not copy';
+            convertErrorEl.style.display = 'block';
+        });
     }
 </script>
 }
