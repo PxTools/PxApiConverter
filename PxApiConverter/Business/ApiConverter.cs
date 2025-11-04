@@ -10,9 +10,7 @@ namespace PxApiConverter.Business
     public class ApiConverter : IApiConverter
     {
         private readonly ILogger<ApiConverter> _logger;
-
         private readonly IDatasource _datasource;
-
         private readonly string _sourceBaseUrl;
         private readonly string _targetBaseUrl;
 
@@ -36,11 +34,20 @@ namespace PxApiConverter.Business
             if (string.IsNullOrWhiteSpace(body))
             {
                 _logger.LogInformation("Conversion attempted with empty body.");
-                throw new ArgumentException("Body is required", nameof(pxApi1Url));
+                throw new ArgumentException("Body is required", nameof(body));
             }
 
             // Validate that query is in right format
-            var queries = JsonConvert.DeserializeObject<TableQuery>(body);
+            TableQuery? queries;
+            try
+            {
+                queries = JsonConvert.DeserializeObject<TableQuery>(body);
+            }
+            catch (JsonException ex)
+            {
+                _logger.LogError(ex, "Failed to deserialize body as TableQuery");
+                throw new ArgumentException("Invalid body format", nameof(body));
+            }
 
             if (queries == null)
             {
@@ -60,7 +67,6 @@ namespace PxApiConverter.Business
                 _logger.LogInformation("No builder found for path {Path}", path);
                 throw new ArgumentException("Table not found", nameof(pxApi1Url));
             }
-
 
             // Convert the old query to a new query
             builder.BuildForSelection();
@@ -96,7 +102,16 @@ namespace PxApiConverter.Business
 
             selection.Placement = placement;
 
-            var postBody = JsonConvert.SerializeObject(selection, Formatting.Indented, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+            string postBody;
+            try
+            {
+                postBody = JsonConvert.SerializeObject(selection, Formatting.Indented, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+            }
+            catch (JsonException ex)
+            {
+                _logger.LogError(ex, "Failed to serialize selection for path {Path}", path);
+                throw new InvalidOperationException("Failed to serialize converted selection", ex);
+            }
 
             var result = new ConvertResultModel
             {
@@ -104,7 +119,6 @@ namespace PxApiConverter.Business
                 PostUrl = dataUrl,
                 PostBody = postBody
             };
-
 
             return Task.FromResult(result);
         }
