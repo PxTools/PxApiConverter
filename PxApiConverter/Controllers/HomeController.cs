@@ -68,8 +68,7 @@ namespace PxApiConverter.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Conversion failed");
-                // Return the real exception message as requested
-                return BadRequest(new { error = ex.Message });
+                return BadRequest(new { error = "Conversion failed" });
             }
         }
     }
