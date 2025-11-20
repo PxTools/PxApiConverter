@@ -68,7 +68,7 @@ namespace PxApiConverter.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Conversion failed");
-                return BadRequest(new { error = "Conversion failed" });
+                return BadRequest(new { error = "Conversion failed. Check that the format is correct and that the query works in PxWebApi1." });
             }
         }
     }

@@ -3,16 +3,32 @@
     var urlPrefix = (string?)ViewData["UrlPrefix"] ?? string.Empty;
 }
 
-<h1 class="mb-4">PxApi Converter</h1>
+<!-- För säkerhets skull: definiera .fw-bold om tema är Bootstrap 4 (där klassen inte finns) -->
+<style>
+    .fw-bold {
+        font-weight: 700 !important;
+    }
+
+    .fw-semibold {
+        font-weight: 600 !important;
+    }
+</style>
+<h1 class="mb-4">PxWebApi converter</h1>
 
 <div class="row">
     <div class="col-lg-8 col-xl-7">
-        <div class="alert alert-info mb-4" role="alert">
+        <div class="mb-4" >
+            This converter allows you to transform a PxWebApi 1 query into a PxWebApi 2-compliant query.
+            <br />
+            <span class="fw-bold">Contact:</span> <a href="mailto:px@scb.se?subject=PxWebApi%20Converter%20Support" class="text-decoration-none">px@scb.se</a>
+        </div>
+        <div class="alert alert-info mb-4" role="alert">           
             Note: The JsonStat and SDMX formats are not supported in API2.
         </div>
+
         <form id="convertForm" method="post" action="@Url.Action("ConvertResult", "Home")" class="mb-4">
             <div class="mb-3">
-                <label for="urlInput" class="form-label">URL</label>
+                <label for="urlInput" class="form-label"> Paste your URL in PxWebApi 1 format</label>
                 <input type="text" class="form-control" id="urlInput" name="url" placeholder="@urlPrefix..." required />
                 <div class="invalid-feedback" id="urlError">URL must start with @urlPrefix</div>
             </div>
@@ -28,14 +44,18 @@
             <h2 class="h5 mb-3">Resultat</h2>
             <div class="mb-3">
                 <div class="d-flex justify-content-between align-items-center mb-1">
-                    <label class="form-label fw-semibold mb-0">GET URL</label>
-                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="copyToClipboard('getResult', this)" aria-label="Copy GET URL">Copy GET URL</button>
+                    <label >
+                        <span class="form-label fw-bold ">GET URL</span>
+                        <br />If the GET request fails it may be because the query contains too many values. Try using POST instead.
+                    </label>                    
+                    <button type="button" class="btn btn-sm btn-outline-secondary text-nowrap" onclick="copyToClipboard('getResult', this)" aria-label="Copy GET URL">Copy GET URL</button>
                 </div>
                 <pre class="bg-light p-2 border rounded" style="white-space:pre-wrap;" id="getResult"></pre>
             </div>
+            <div class="mb-3"><hr style="border:5px solid #0d6efd; opacity:100;" /></div>
             <div class="mb-3">
                 <div class="d-flex justify-content-between align-items-center mb-1">
-                    <label class="form-label fw-semibold mb-0">POST URL</label>
+                    <label class="form-label fw-bold mb-0">POST URL</label>
                     <button type="button" class="btn btn-sm btn-outline-secondary" onclick="copyToClipboard('postUrlResult', this)" aria-label="Copy POST URL">Copy POST URL</button>
                 </div>
                 <pre class="bg-light p-2 border rounded" style="white-space:pre-wrap;" id="postUrlResult"></pre>
@@ -43,7 +63,7 @@
             <div class="mb-3">
                 <div class="d-flex justify-content-between align-items-center mb-1">
                     <label class="form-label fw-semibold mb-0">POST Body</label>
-                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="copyToClipboard('postBodyResult', this)" aria-label="Copy POST Body">Copy POST Body</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary text-nowrap" onclick="copyToClipboard('postBodyResult', this)" aria-label="Copy POST Body">Copy POST Body</button>
                 </div>
                 <pre class="bg-light p-2 border rounded" style="white-space:pre-wrap;" id="postBodyResult"></pre>
             </div>
