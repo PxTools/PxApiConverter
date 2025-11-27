@@ -37,7 +37,7 @@ namespace PxApiConverter.Controllers
         }
 
         [HttpPost]
-        [IgnoreAntiforgeryToken] // Remove if you later add the token from the form / fetch call
+        [ValidateAntiForgeryToken] 
         public async Task<IActionResult> ConvertResult([FromForm] string url, [FromForm] string body)
         {
             var prefix = _options.SourceUrlPrefix ?? string.Empty;
@@ -45,7 +45,24 @@ namespace PxApiConverter.Controllers
             {
                 return BadRequest(new { error = "Url is required" });
             }
+            if (body != null && body.Length > 10_000)
+                return BadRequest(new { error = "JSON too long." });
 
+            if(url.Length > 500)
+                return BadRequest(new { error = "URL too long." });
+
+            // URL-validation
+            if (!Uri.TryCreate(url, UriKind.Absolute, out var uri))
+            {
+                return BadRequest(new { error = "Invalid URL." });
+            }
+
+            // Only http/https
+            if (uri.Scheme != Uri.UriSchemeHttps && uri.Scheme != Uri.UriSchemeHttp)
+            {
+                return BadRequest(new { error = "Only HTTP or HTTPS allowed." });
+            }
+            //URL must start with
             if (!string.IsNullOrEmpty(prefix) && !url.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
             {
                 return BadRequest(new { error = $"URL must start with {prefix}" });

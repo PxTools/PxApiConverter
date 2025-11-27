@@ -1,9 +1,10 @@
-﻿@{
+﻿@using System.Text.Json
+@{
     ViewData["Title"] = "Start";
     var urlPrefix = (string?)ViewData["UrlPrefix"] ?? string.Empty;
+    var urlPrefixJson = JsonSerializer.Serialize(urlPrefix); 
 }
 
-<!-- För säkerhets skull: definiera .fw-bold om tema är Bootstrap 4 (där klassen inte finns) -->
 <style>
     .fw-bold {
         font-weight: 700 !important;
@@ -25,9 +26,16 @@
         </div>
 
         <form id="convertForm" method="post" action="@Url.Action("ConvertResult", "Home")" class="mb-4">
+            @Html.AntiForgeryToken()
             <div class="mb-3">
                 <label for="urlInput" class="form-label"> Paste your URL in PxWebApi 1 format</label>
-                <input type="text" class="form-control" id="urlInput" name="url" placeholder="@urlPrefix..." required />
+                <input type="text" 
+                    class="form-control" 
+                    id="urlInput" 
+                    name="url"
+                    spellcheck="false"
+                    placeholder="@urlPrefix..." 
+                    required />
                 <div class="invalid-feedback" id="urlError">URL must start with @urlPrefix</div>
             </div>
             <div class="mb-3">
@@ -80,8 +88,7 @@
     const convertForm = document.getElementById('convertForm');
     const urlError = document.getElementById('urlError');
     const convertErrorEl = document.getElementById('convertError');
-
-    const URL_PREFIX = '@urlPrefix';
+    const URL_PREFIX = @Html.Raw(urlPrefixJson)
 
     function isValidPrefix(value) {
         if(!URL_PREFIX) return true; // allow all if no prefix configured
