@@ -45,7 +45,7 @@ namespace PxApiConverter.Controllers
             {
                 return BadRequest(new { error = "Url is required" });
             }
-            if (body != null && body.Length > 10_000)
+            if (body != null && body.Length > 300000)
                 return BadRequest(new { error = "JSON too long." });
 
             if(url.Length > 500)
