@@ -8,9 +8,9 @@
 
 	<ItemGroup>
 	  <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
-	  <PackageReference Include="PcAxis.Core" Version="1.2.7" />
-	  <PackageReference Include="PcAxis.Query" Version="1.0.10" />
-	  <PackageReference Include="PcAxis.Sql" Version="1.5.2" />
+	  <PackageReference Include="PCAxis.Core" Version="1.2.7" />
+	  <PackageReference Include="PCAxis.Query" Version="1.0.10" />
+	  <PackageReference Include="PCAxis.Sql" Version="1.5.2" />
 	  <PackageReference Include="PxWeb.Api2.Server.Models" Version="2.0.0" />
 	  <PackageReference Include="System.Configuration.ConfigurationManager" Version="9.0.10" />
 	</ItemGroup>
